@@ -18,5 +18,12 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     },
   }, {});
+  User.associate = models => {
+    User.hasMany(models.Request, {
+      as: 'requester',
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+  };
   return User;
 };

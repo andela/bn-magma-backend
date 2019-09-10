@@ -1,5 +1,6 @@
 import UserService from '../services/UserService';
 import Responses from '../utils/Responses';
+import Helper from '../utils/Helper';
 
 /**
  * @class
@@ -32,7 +33,8 @@ export default class UserController {
         firstName: response.firstName,
         lastName: response.lastName
       };
-      Responses.setSuccess(201, 'user account created successfully', result);
+      const token = Helper.generateToken({ id: response.id, email: response.email });
+      Responses.setSuccess(201, 'user account created successfully', { token, ...result });
       return Responses.send(res);
     }).catch(() => {
       Responses.setError(500, 'database error');

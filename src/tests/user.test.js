@@ -58,6 +58,7 @@ describe('/POST Signup route', () => {
       .end((err, res) => {
         expect(res).to.have.status(201);
         expect(res.body).to.be.an('object');
+        expect(res.body.data).to.have.property('token');
         expect(res.body).to.have.property('message')
           .eql('user account created successfully');
         done(err);
