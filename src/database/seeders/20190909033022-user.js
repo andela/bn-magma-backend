@@ -34,5 +34,23 @@ module.exports = {
     isVerified: true,
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    firstName: 'madiba',
+    lastName: 'nelson',
+    email: 'madiba@gmail.com',
+    password: '$2b$10$mnxlDiPZl.aUHVJJbe3foO7QKKcKqFuhwSwk4XbFQTAp1mdSG3TIC',
+    isVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    firstName: 'notmadiba',
+    lastName: 'notnelson',
+    email: 'notmadiba@gmail.com',
+    password: '$2b$10$mnxlDiPZl.aUHVJJbe3foO7QKKcKqFuhwSwk4XbFQTAp1mdSG3TIC',
+    isVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }], {})
 };

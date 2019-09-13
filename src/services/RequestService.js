@@ -19,4 +19,16 @@ export default class RequestService {
   static bookTrip(requestDetails) {
     return Request.create(requestDetails);
   }
+
+  /**
+   * @method requests
+   * @description Medium between the database and travelRequest Controller
+   * @static
+   * @param {object} requestDetails - data object
+   * @returns {object} JSON response
+   * @memberof RequestService
+   */
+  static userTripRequests(requestDetails) {
+    return Request.findAll({ where: { userId:requestDetails } });
+  }
 }

@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "Documentation to test the endpoints for the Barefoot Normad API"
   },
-  "host": "localhost:5000",
+  "host": "localhost:4000",
   "basePath": "/api/v1",
   "tags": [
     {
@@ -26,10 +26,10 @@
     }
   },
   "paths": {
-    "/users/signup": {
+    "/user/signup": {
       "post": {
         "tags": ["auth"],
-        "summary": "Creates a new user",
+        "summary": "Create a new user",
         "description": "This endpoint registers a new user",
         "operationId": "createUser",
         "consumes": ["application/json"],
@@ -62,50 +62,20 @@
         }
       }
     },
-    "/users/signin": {
-      "post": {
-        "tags": ["auth"],
-        "summary": "Signs in a verified user",
-        "description": "This endpoint signs in a verified user",
-        "operationId": "loginUser",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "security": [],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Information needed for login",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Signin"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Login successful.",
-            "schema": {
-              "$ref": "#/definitions/AuthResponse"
-            }
-          },
-          "404": {
-            "description": "Your email cannot be found in our database."
-          },
-          "401": {
-            "description": "Your password is incorrect."
-          }
-        }
-      }
-    },
     "/requests": {
       "post": {
-        "tags": ["request"],
+        "tags": [
+          "request"
+        ],
         "summary": "Book a travel request",
         "description": "This endpoint books a one-way trip request",
         "operationId": "bookTrip",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
         "security": [
           {
             "Bearer": []
@@ -133,7 +103,33 @@
             "description": "departureDate is required"
           },
           "409": {
-            "description": "you already have a trip booked around this period, you may choose to cancel and make a multi-city request"
+            "description": "You already have a trip slated for this day you may choose to make a multi-city request"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "request"
+        ],
+        "summary": "a user can view all request he/she made",
+        "description": "This end point display all request made by a user",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trip requests retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/RequestResponse"
+            }
+          },
+          "404": {
+            "description": "You are yet to book a make a trip request"
           }
         }
       }
@@ -158,18 +154,6 @@
         }
       }
     },
-    "Signin": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string",
-          "format": "password"
-        }
-      }
-    },
     "BookTrip": {
       "type": "object",
       "properties": {
@@ -181,7 +165,10 @@
         },
         "type": {
           "type": "string",
-          "enum": ["one-way", "return"]
+          "enum": [
+            "one-way",
+            "return"
+          ]
         },
         "departureDate": {
           "type": "string",
@@ -212,11 +199,17 @@
               "token": {
                 "type": "string"
               },
+              "email": {
+                "type": "string"
+              },
               "id": {
                 "type": "integer",
                 "format": "int64"
               },
-              "email": {
+              "firstname": {
+                "type": "string"
+              },
+              "lastname": {
                 "type": "string"
               },
               "firstName": {
@@ -248,7 +241,10 @@
               },
               "type": {
                 "type": "string",
-                "enum": ["one-way", "return"]
+                "enum": [
+                  "one-way",
+                  "return"
+                ]
               },
               "departureDate": {
                 "type": "string",
@@ -263,10 +259,6 @@
               },
               "accommodation": {
                 "type": "string"
-              },
-              "status": {
-                "type": "string",
-                "enum": ["open", "closed"]
               }
             }
           }

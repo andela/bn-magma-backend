@@ -6,7 +6,7 @@ import Auth from '../middlewares/Auth';
 
 const { userAuth } = Auth;
 const { validateTrip, validateTripRequest } = requestValidations;
-const { bookTrip } = RequestController;
+const { bookTrip, userTripRequests } = RequestController;
 
 const requestRoute = express.Router();
 
@@ -17,6 +17,12 @@ requestRoute.post(
   validateTrip,
   validateTripRequest,
   bookTrip
+);
+
+requestRoute.get(
+  '/requests',
+  Auth.userAuth,
+  userTripRequests
 );
 
 export default requestRoute;
