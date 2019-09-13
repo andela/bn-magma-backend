@@ -1,5 +1,5 @@
-import Responses from '../utils/Responses';
 import Helper from '../utils/Helper';
+import Responses from '../utils/Responses';
 
 /**
  * @class Auth
@@ -18,11 +18,15 @@ class Auth {
    * @memberof Auth
    */
   static async userAuth(req, res, next) {
-    if (!req.headers.authorization) {
+    const { authorization } = req.headers;
+    if (!authorization) {
       Responses.setError(401, 'You are not logged in');
       return Responses.send(res);
     }
-    const token = req.headers.authorization.split(' ')[1];
+    let token = authorization;
+    if (token.includes(' ')) {
+      token = authorization.split(' ')[1];
+    }
     try {
       const decoded = await Helper.verifyToken(token);
       req.user = decoded;

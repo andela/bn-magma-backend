@@ -1,7 +1,6 @@
 import models from '../database/models';
 import Helper from '../utils/Helper';
 
-
 const { User } = models;
 
 /**
@@ -51,5 +50,64 @@ export default class UserService {
       lastName: foundUser.lastName
     };
     return user;
+  }
+
+  /**
+   * @method findUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {object} id - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static async findUser(id) {
+    const user = await User.findByPk(id);
+    return user;
+  }
+
+  /**
+   * @method retrieveUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async retrieveUser(id, email) {
+    let user = await User.findOne({ returning: true, where: { id, email } });
+    return user;
+  }
+
+  /**
+   * @method updateUser
+   * @description Medium between the database and UserController
+   * @static
+<<<<<<< HEAD
+=======
+   * @param {object} email - data number
+   * @returns {object} JSON response
+   * @memberof UserService
+  */
+  static updateUser(email) {
+    User.update(
+      { isVerified: true },
+      { where: { email } }
+    );
+  }
+
+  /**
+   * @method updateUserProfile
+>>>>>>> aec2e123d30b45fd82c8ab2af68fe1866f69933c
+   * @param {object} userCredentials - data object
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async updateUserProfile(userCredentials, id, email) {
+    const data = userCredentials;
+    const user = await User.update(data, { returning: true, where: { id, email } });
+    return user[1];
   }
 }

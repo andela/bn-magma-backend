@@ -5,7 +5,7 @@ module.exports = {
     },
     origin: { type: Sequelize.STRING, allowNull: false },
     destination: { type: Sequelize.STRING, allowNull: false },
-    type: { type: Sequelize.ENUM, values: ['one-way', 'return'], allowNull: false },
+    type: { type: Sequelize.ENUM, values: ['one-way', 'return', 'multi-city'], allowNull: false },
     departureDate: { type: Sequelize.DATE, allowNull: false },
     returnDate: { type: Sequelize.DATE },
     reason: { type: Sequelize.STRING },
@@ -14,6 +14,11 @@ module.exports = {
     userId: {
       type: Sequelize.INTEGER, onDelete: 'CASCADE', references: { model: 'Users', key: 'id' }
     },
+<<<<<<< HEAD
+    managerId: { type:Sequelize.INTEGER, allowNull: true },
+=======
+    lineManager: { type:Sequelize.INTEGER, allowNull: true },
+>>>>>>> aec2e123d30b45fd82c8ab2af68fe1866f69933c
     createdAt: { type: Sequelize.DATE, allowNull: false },
     updatedAt: { type: Sequelize.DATE, allowNull: false }
   }),

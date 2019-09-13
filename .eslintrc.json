@@ -8,7 +8,7 @@
     },
     "parser": "babel-eslint",
     "parserOptions": {
-    "no-undefined": 0,  
+    "no-undefined": 0,
     "ecmaVersion": 6,
     "sourceType": "module",
     "ecmaFeatures": {
@@ -42,4 +42,3 @@
     }]
     }
 }
-
