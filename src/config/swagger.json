@@ -161,6 +161,45 @@
           }
         }
       }
+    },
+    "/requests/:id": {
+      "delete": {
+        "tags": ["Delete request"],
+        "summary": "Delete a travel request",
+        "description": "This endpoint deletes a single trip request",
+        "operationId": "deleteTrip",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "id": "parameter",
+            "description": "parameter needed to delete a trip",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BookTrip"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "message deleted successfully",
+            "schema": {
+              "$ref": "#/definitions/RequestResponse"
+            }
+          },
+          "500": {
+            "description": "database error"
+          },
+          "409": {
+            "description": "you already have a trip booked around this period, you may choose to cancel and make a multi-city request"
+          }
+        }
+      }
     }
   },
   "definitions": {

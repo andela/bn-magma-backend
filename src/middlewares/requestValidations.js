@@ -63,4 +63,39 @@ const validateTrip = (req, res, next) => {
   next();
 };
 
-export default { validateTripRequest, validateTrip };
+/**
+   * @function
+   * @description Validates delete request
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {object} next
+   * @returns {object} JSON response
+   */
+  const validateDelete = (req, res, next) => {
+    const { id } = req.params;
+    const token = req.headers.authorization.split(' ')[1];
+    const decoded =  Helper.verifyToken(token);
+    const userId = decoded.id;
+    models.Request.findOne({ 
+      where: { 
+        id: Number(id) 
+      }, 
+      include: [{
+        model: models.User,
+        as: 'requester',
+      }]
+      }).then(response => {
+      if (!response) {
+      Responses.setError(404, 'Request does not exist');
+      return Responses.send(res);
+      }
+      if (response.dataValues.userId !== userId){
+      Responses.setError(403, "You cannot delete another person's request");
+      return Responses.send(res);
+   }
+   next();
+  });
+  };
+
+export default { validateTripRequest, validateTrip, validateDelete };

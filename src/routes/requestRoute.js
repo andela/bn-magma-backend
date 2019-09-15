@@ -5,8 +5,8 @@ import requestValidations from '../middlewares/requestValidations';
 import Auth from '../middlewares/Auth';
 
 const { userAuth } = Auth;
-const { validateTrip, validateTripRequest } = requestValidations;
-const { bookTrip } = RequestController;
+const { validateTrip, validateTripRequest, validateDelete } = requestValidations;
+const { bookTrip, deleteTrip } = RequestController;
 
 const requestRoute = express.Router();
 
@@ -17,6 +17,13 @@ requestRoute.post(
   validateTrip,
   validateTripRequest,
   bookTrip
+);
+requestRoute.delete(
+  '/requests/:id',
+  userAuth,
+  validation.validateParam('id'),
+  validateDelete,
+  deleteTrip
 );
 
 export default requestRoute;

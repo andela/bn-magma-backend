@@ -19,4 +19,5 @@ export default class RequestService {
   static bookTrip(requestDetails) {
     return Request.create(requestDetails);
   }
+  
 }

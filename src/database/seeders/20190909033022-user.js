@@ -3,7 +3,7 @@ module.exports = {
     firstName: 'Tosin',
     lastName: 'Alabi',
     email: 'tosin@mail.com',
-    password: '$2b$10$mnxlDiPZl.aUHVJJbe3foO7QKKcKqFuhwSwk4XbFQTAp1mdSG3TIC',
+    password: '$2a$10$2lTVW5ppYCY1JOb3jkoz3e0f8M1D6bcoTVsObsk7WnhfqLjEJ1HDq',
     isVerified: true,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -12,7 +12,7 @@ module.exports = {
     firstName: 'Jibson',
     lastName: 'Onyekelu',
     email: 'naimatdavid@mail.com',
-    password: '$2b$10$fiqEMlgnIeVVJjHpZrXlfePcqtdcAHe87g5MTrm6DSuIpX7PtPFEy',
+    password: '$2a$10$2lTVW5ppYCY1JOb3jkoz3e0f8M1D6bcoTVsObsk7WnhfqLjEJ1HDq',
     isVerified: true,
     createdAt: new Date(),
     updatedAt: new Date()
