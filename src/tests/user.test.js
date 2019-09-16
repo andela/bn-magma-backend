@@ -5,7 +5,6 @@ import Helper from '../utils/Helper';
 import UserService from '../services/UserService';
 
 chai.use(chaiHttp);
-
 const { expect } = chai;
 let token;
 
@@ -28,7 +27,6 @@ describe('/POST Signup route', () => {
         done(err);
       });
   });
-
   it('should return an error if email already exists', done => {
     chai
       .request(app)
@@ -47,7 +45,6 @@ describe('/POST Signup route', () => {
         done(err);
       });
   });
-
   it('should create a new user if details are valid', done => {
     chai
       .request(app)
@@ -68,7 +65,6 @@ describe('/POST Signup route', () => {
       });
   });
 });
-
 describe('/POST Signin route', () => {
   it('should return an error if user credentials are invalid', done => {
     chai
@@ -86,7 +82,6 @@ describe('/POST Signin route', () => {
         done(err);
       });
   });
-
   it('should return an error if login email is not found', done => {
     chai
       .request(app)
@@ -103,7 +98,6 @@ describe('/POST Signin route', () => {
         done(err);
       });
   });
-
   it('should return an error if password is incorrect', done => {
     chai
       .request(app)
@@ -120,7 +114,6 @@ describe('/POST Signin route', () => {
         done(err);
       });
   });
-
   it('should return an error if email is not verified', done => {
     chai
       .request(app)
@@ -136,7 +129,6 @@ describe('/POST Signin route', () => {
         done(err);
       });
   });
-
   it('should sign in a registered user if details are valid', done => {
     chai
       .request(app)

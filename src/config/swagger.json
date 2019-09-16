@@ -48,16 +48,10 @@
         ],
         "responses": {
           "201": {
-            "description": "user account created successfully",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/AuthResponse"
             }
-          },
-          "409": {
-            "description": "email already in use"
-          },
-          "400": {
-            "description": "email is required, and should follow this format: myemail@domain.com"
           }
         }
       }
@@ -167,10 +161,10 @@
     "Signup": {
       "type": "object",
       "properties": {
-        "firstName": {
+        "firstname": {
           "type": "string"
         },
-        "lastName": {
+        "lastname": {
           "type": "string"
         },
         "email": {
@@ -240,13 +234,13 @@
                 "type": "integer",
                 "format": "int64"
               },
+              "firstname": {
+                "type": "string"
+              },
+              "lastname": {
+                "type": "string"
+              },
               "email": {
-                "type": "string"
-              },
-              "firstName": {
-                "type": "string"
-              },
-              "lastName": {
                 "type": "string"
               }
             }

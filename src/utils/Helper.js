@@ -5,10 +5,10 @@ import Responses from './Responses';
 const secret = process.env.SECRET;
 
 /**
- * @class Helper
- * @description An helper class containing utility methods
- * @exports Helper
- */
+* @class Helper
+* @description An helper class containing utility methods
+* @exports Helper
+*/
 export default class Helper {
   /**
    * @method generateToken
