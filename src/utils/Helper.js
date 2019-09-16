@@ -20,7 +20,7 @@ export default class Helper {
    */
   static generateToken(payload) {
     const token = jwt.sign(payload, secret, {
-      expiresIn: '1hr',
+      expiresIn: '24hr',
     });
     return token;
   }

@@ -34,4 +34,25 @@ export default class RequestController {
       return Responses.send(res);
     });
   }
+
+  /**
+   * @method
+   * @description Implements get all user requests endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof RequestController
+   */
+  static userTripRequests(req, res) {
+    RequestService.userTripRequests(req.user.id)
+      .then(userTrips => {
+        if (userTrips.length === 0) {
+          Responses.setError(404, 'You are yet to book a make a trip request');
+          return Responses.send(res);
+        }
+        Responses.setSuccess(200, 'Trip requests retrieved successfully', userTrips);
+        return Responses.send(res);
+      });
+  }
 }
