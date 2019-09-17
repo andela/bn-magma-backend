@@ -220,6 +220,26 @@
         },
         "accommodation": {
           "type": "string"
+        },
+        "childRequests": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "destination": {
+                "type": "string"
+              },
+              "departureDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "accommodation": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },

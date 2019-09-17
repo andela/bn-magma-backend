@@ -27,7 +27,39 @@ export default class RequestController {
     };
     request = Helper.formatRequest(request);
     RequestService.bookTrip(request).then(response => {
+      if (response.type === 'multi-city') {
+        const { childRequests } = req.body;
+        return RequestController.multiCity(childRequests, response, res);
+      }
       Responses.setSuccess(201, 'travel request booked successfully', response);
+      return Responses.send(res);
+    }).catch(() => {
+      Responses.setError(500, 'database error');
+      return Responses.send(res);
+    });
+  }
+
+  /**
+   * @method
+   * @description Control multi-city requests
+   * @static
+   * @param {object} children
+   * @param {object} data
+   * @param {object} res
+   * @returns {object} JSON response
+   * @memberof RequestController
+   */
+  static multiCity(children, data, res) {
+    let childRequests = children.map(child => ({
+      destination: child.destination,
+      departureDate: child.departureDate,
+      reason: child.reason,
+      accommodation: child.accommodation,
+      requestId: data.id
+    }));
+    childRequests = childRequests.map(Helper.formatRequest);
+    RequestService.multiCity(childRequests).then(response => {
+      Responses.setSuccess(201, 'travel request booked successfully', [data, ...response]);
       return Responses.send(res);
     }).catch(() => {
       Responses.setError(500, 'database error');

@@ -21,4 +21,20 @@ const validate = path => (req, res, next) => {
   next();
 };
 
-export default { validate };
+const validateChildRequests = (req, res, next) => {
+  const { childRequests, type } = req.body;
+  let errorMessages;
+  if (childRequests && type === 'multi-city') {
+    const result = Joi.validate(
+      childRequests,
+      (_.get(Schemas, 'childRequest')), { abortEarly: false }
+    );
+    errorMessages = Helper.buildErrorResponse(result);
+    if (errorMessages) {
+      return Responses.send(res);
+    }
+  }
+  next();
+};
+
+export default { validate, validateChildRequests };

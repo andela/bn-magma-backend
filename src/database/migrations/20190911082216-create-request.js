@@ -5,7 +5,7 @@ module.exports = {
     },
     origin: { type: Sequelize.STRING, allowNull: false },
     destination: { type: Sequelize.STRING, allowNull: false },
-    type: { type: Sequelize.ENUM, values: ['one-way', 'return'], allowNull: false },
+    type: { type: Sequelize.ENUM, values: ['one-way', 'return', 'multi-city'], allowNull: false },
     departureDate: { type: Sequelize.DATE, allowNull: false },
     returnDate: { type: Sequelize.DATE },
     reason: { type: Sequelize.STRING },

@@ -15,7 +15,7 @@ describe('/POST Requests route', () => {
       .post('/api/v1/users/signin')
       .send({
         email: 'tosin@mail.com',
-        password: 'Tosin1234',
+        password: 'Tosin1234'
       })
       .end((err, res) => {
         userToken = res.body.data.token;
@@ -55,7 +55,6 @@ describe('/POST Requests route', () => {
         destination: '  London  ',
         type: 'one-way',
         departureDate: '2019-10-11',
-        returnDate: '2019/11/10',
         reason: '   dgfgfg      hfhfhf        kfkfkf   ',
         accommodation: '   bbbv   '
       })
@@ -78,9 +77,44 @@ describe('/POST Requests route', () => {
         destination: '  London  ',
         type: 'one-wy',
         departureDate: '2019/160/11',
-        returnDate: '2029/22/33',
         reason: '   dgfgfg      hfhfhf        kfkfkf   ',
         accommodation: '   bbbv   '
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status').eql('error');
+        expect(res.body).to.have.property('message');
+        done(err);
+      });
+  });
+
+  it('should return an error if child request details are invalid', done => {
+    chai
+      .request(app)
+      .post('/api/v1/requests')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: 'Lagos',
+        destination: 'London',
+        type: 'multi-city',
+        departureDate: '2019-10-11',
+        reason: '   dgfgfg      hfhfhf        kfkfkf   ',
+        accommodation: '   bbbv   ',
+        childRequests: [
+          {
+            destination: 'New York',
+            departureDate: '201910-09',
+            reason: 'Presentation',
+            accommodation: 'Point Hotel'
+          },
+          {
+            destination: 'Paris',
+            departureDate: '201912-31',
+            reason: 'banch',
+            accommodation: 'pinta Hotel'
+          }
+        ]
       })
       .end((err, res) => {
         expect(res).to.have.status(400);
@@ -110,7 +144,7 @@ describe('/POST Requests route', () => {
         expect(res.body).to.be.an('object');
         expect(res.body).to.have.property('status').eql('error');
         expect(res.body).to.have.property('message')
-          .eql('you cannot have returnDate for a one-way trip');
+          .eql('you cannot have returnDate for a "one-way" or "multi-city" trip');
         done(err);
       });
   });
@@ -138,7 +172,66 @@ describe('/POST Requests route', () => {
       });
   });
 
-  it('should book a trip if details are valid', done => {
+  it('should return an error if a latter trip date comes before the former', done => {
+    chai
+      .request(app)
+      .post('/api/v1/requests')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: 'Lagos',
+        destination: 'London',
+        type: 'multi-city',
+        departureDate: '2019-10-11',
+        reason: '   dgfgfg      hfhfhf        kfkfkf   ',
+        accommodation: '   bbbv   ',
+        childRequests: [
+          {
+            destination: 'New York',
+            departureDate: '2019-10-09',
+            reason: 'Presentation',
+            accommodation: 'Point Hotel'
+          },
+          {
+            destination: 'Paris',
+            departureDate: '2019-10-07',
+            reason: 'banch',
+            accommodation: 'pinta Hotel'
+          }
+        ]
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status').eql('error');
+        expect(res.body).to.have.property('message');
+        done(err);
+      });
+  });
+
+  it('should book a one-way trip if details are valid', done => {
+    chai
+      .request(app)
+      .post('/api/v1/requests')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: 'Lagos  ',
+        destination: '  London  ',
+        type: 'one-way',
+        departureDate: '2019-10-05',
+        reason: '   dgfgfg      hfhfhf        kfkfkf   ',
+        accommodation: '   bbbv   '
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(201);
+        expect(res.body).to.be.an('object');
+        expect(res.body.data).to.have.property('origin');
+        expect(res.body).to.have.property('message')
+          .eql('travel request booked successfully');
+        done(err);
+      });
+  });
+
+  it('should book a return trip if details are valid', done => {
     chai
       .request(app)
       .post('/api/v1/requests')
@@ -163,7 +256,68 @@ describe('/POST Requests route', () => {
       });
   });
 
-  it('should return an error if a requester already has a trip booked for that period', done => {
+  it('should book a multi-city trip if details are valid', done => {
+    chai
+      .request(app)
+      .post('/api/v1/requests')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: 'Lagos',
+        destination: 'London',
+        type: 'multi-city',
+        departureDate: '2019-11-12',
+        reason: '   dgfgfg      hfhfhf        kfkfkf   ',
+        accommodation: '   bbbv   ',
+        childRequests: [
+          {
+            destination: 'New York',
+            departureDate: '2019-11-13',
+            reason: 'Presentation',
+            accommodation: 'Point Hotel'
+          },
+          {
+            destination: 'Paris',
+            departureDate: '2019-11-15',
+            reason: 'banch',
+            accommodation: 'pinta Hotel'
+          }
+        ]
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(201);
+        expect(res.body).to.be.an('object');
+        expect(res.body.data).to.be.an('array');
+        expect(res.body.data[1]).to.have.property('requestId');
+        expect(res.body).to.have.property('message')
+          .eql('travel request booked successfully');
+        done(err);
+      });
+  });
+
+  it('should return an error if a requester already has a one-way trip booked for period', done => {
+    chai
+      .request(app)
+      .post('/api/v1/requests')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: 'Lagos  ',
+        destination: '  London  ',
+        type: 'one-way',
+        departureDate: '2019-10-05',
+        reason: '   dgfgfg      hfhfhf        kfkfkf   ',
+        accommodation: '   bbbv   '
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(409);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status').eql('error');
+        expect(res.body).to.have.property('message')
+          .eql('you already have a trip booked around this period');
+        done(err);
+      });
+  });
+
+  it('should return an error if a requester already has a return trip booked for that period', done => {
     chai
       .request(app)
       .post('/api/v1/requests')
@@ -182,8 +336,7 @@ describe('/POST Requests route', () => {
         expect(res.body).to.be.an('object');
         expect(res.body).to.have.property('status').eql('error');
         expect(res.body).to.have.property('message')
-          .eql('you already have a trip booked around this period, '
-          + 'you may choose to cancel and make a multi-city request');
+          .eql('you already have a trip booked around this period');
         done(err);
       });
   });

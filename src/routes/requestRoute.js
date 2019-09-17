@@ -4,19 +4,17 @@ import validation from '../middlewares/validation';
 import requestValidations from '../middlewares/requestValidations';
 import Auth from '../middlewares/Auth';
 
-const { userAuth } = Auth;
-const { validateTrip, validateTripRequest } = requestValidations;
-const { bookTrip } = RequestController;
-
 const requestRoute = express.Router();
 
 requestRoute.post(
   '/requests',
-  userAuth,
+  Auth.userAuth,
   validation.validate('request'),
-  validateTrip,
-  validateTripRequest,
-  bookTrip
+  validation.validateChildRequests,
+  requestValidations.validateChildRequest,
+  requestValidations.validateTrip,
+  requestValidations.validateTripRequest,
+  RequestController.bookTrip
 );
 
 export default requestRoute;
