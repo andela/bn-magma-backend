@@ -8,7 +8,7 @@
     "build": "babel -d ./build ./src -s",
     "start": "node ./build/index.js",
     "pretest": "cross-env NODE_ENV=test npm run undo:migrate && cross-env NODE_ENV=test npm run db:migrate && npm run seed",
-    "test": "cross-env NODE_ENV=test nyc mocha --require @babel/register ./src/tests --exit",
+    "test": "cross-env NODE_ENV=test nyc mocha --require @babel/register ./src/tests --timeout 15000 --exit",
     "dev": "cross-env NODE_ENV=development nodemon ./src/index --exec babel-node",
     "lint": "npx eslint ./src --fix",
     "debug": "DEBUG=app:* npm run dev",

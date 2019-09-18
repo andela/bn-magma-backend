@@ -20,14 +20,14 @@ export default class Helper {
    */
   static generateToken(payload) {
     const token = jwt.sign(payload, secret, {
-      expiresIn: '1hr',
+      expiresIn: '24hr',
     });
     return token;
   }
 
   /**
    * @method verifyToken
-   * @description verify user's token for authorization
+   * @description verify user token for authorization
    * @static
    * @param { string } token - sting
    * @returns {object} payload
@@ -113,9 +113,9 @@ export default class Helper {
       origin, destination, reason, accommodation, type, returnDate
     } = request;
     if (!returnDate) request.returnDate = undefined;
-    request.origin = origin.trim();
+    request.origin = origin ? origin.trim() : undefined;
     request.destination = destination.trim();
-    request.type = type.trim();
+    request.type = type ? type.trim() : undefined;
     request.reason = reason ? reason.trim().replace(/  +/g, ' ') : undefined;
     request.accommodation = accommodation ? accommodation.trim() : undefined;
     return request;
@@ -130,11 +130,8 @@ export default class Helper {
    * @memberof Helper
    */
   static noReturn(depart, travel, back) {
-    const conflicts = [];
-    if (depart === travel || back === travel) {
-      conflicts.push(depart);
-    }
-    return conflicts;
+    if (depart === travel || back === travel) return true;
+    return false;
   }
 
   /**
@@ -147,7 +144,6 @@ export default class Helper {
    * @memberof Helper
    */
   static withReturn(travel, depart, ret, back) {
-    const conflicts = [];
     ret = ret.toISOString();
     const firstConflict = travel >= depart && travel <= ret;
     const secondConflict = back >= depart && back <= ret;
@@ -155,8 +151,8 @@ export default class Helper {
     const fourthConflict = ret > travel && ret < back;
     const firstSecondConflict = firstConflict || secondConflict;
     const thirdFourthConflict = thirdConflict || fourthConflict;
-    if (firstSecondConflict || thirdFourthConflict) conflicts.push(depart);
-    return conflicts;
+    if (firstSecondConflict || thirdFourthConflict) return true;
+    return false;
   }
 
   /**
@@ -169,15 +165,40 @@ export default class Helper {
    * @memberof Helper
    */
   static checkTrip(myRequests, travelDate, backDate = undefined) {
-    let conflicts;
+    const conflicts = [];
+    let conflict;
     myRequests.forEach(request => {
       let { departureDate } = request;
       const { returnDate } = request;
       departureDate = departureDate.toISOString();
-      if (!returnDate) conflicts = Helper.noReturn(departureDate, travelDate, backDate);
-      else conflicts = Helper.withReturn(travelDate, departureDate, returnDate, backDate);
+      if (!returnDate) {
+        conflict = Helper.noReturn(departureDate, travelDate, backDate);
+        conflicts.push(conflict);
+      } else {
+        conflict = Helper.withReturn(travelDate, departureDate, returnDate, backDate);
+        conflicts.push(conflict);
+      }
     });
-    if (conflicts) return conflicts;
-    return null;
+    if (conflicts.includes(true)) return true;
+    return false;
   }
+
+  /**
+   * @method getRequestFormat
+   * @description return 404 if no request is found
+   * @param {object} myRequests - Array of user's request
+   * @param {object} travelDate - Departure date in the request body
+   * @param {object} backDate - Return date in the request body
+   * @returns {object} JSON response
+   * @memberof Helper
+   */
+  static getRequestFormat(requests, res) {
+    if (requests.length === 0) {
+      Responses.setError(404, 'There are no trip requests presently');
+      return Responses;
+    }
+    Responses.setSuccess(200, 'Trip requests retrieved successfully', requests);
+    return Responses;
+  }
+
 }

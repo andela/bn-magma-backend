@@ -21,4 +21,41 @@ const validate = path => (req, res, next) => {
   next();
 };
 
-export default { validate };
+const validateChildRequests = (req, res, next) => {
+  const { childRequests, type } = req.body;
+  let errorMessages;
+  if (childRequests && type === 'multi-city') {
+    const result = Joi.validate(
+      childRequests,
+      (_.get(Schemas, 'childRequest')), { abortEarly: false }
+    );
+    errorMessages = Helper.buildErrorResponse(result);
+    if (errorMessages) {
+      Responses.setError(400, error);
+      return Responses.send(res);
+    }
+  }
+  next();
+};
+
+/**
+ * @function
+ * @description Validates user credentials
+ * @param {object} path - The profile setting schema
+ * @returns {object} JSON response
+ */
+const validateEmail = path => (req, res, next) => {
+  const email = req.params;
+  if (_.has(Schemas, path)) {
+    const schema = _.get(Schemas, path, 0);
+    const response = Joi.validate(email, schema, { abortEarly: false });
+    if (response.error) {
+      const error = response.error.details[0].context.label;
+      Responses.setError(400, error);
+      return Responses.send(res);
+    }
+  }
+  next();
+};
+
+export default { validate, validateEmail, validateChildRequests };

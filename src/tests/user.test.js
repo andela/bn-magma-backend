@@ -9,6 +9,7 @@ chai.use(chaiHttp);
 const { expect } = chai;
 let token;
 
+let userToken;
 describe('/POST Signup route', () => {
   it('should return an error if user credentials are invalid', done => {
     chai
@@ -198,5 +199,234 @@ describe('/users/verifyEmail/:token', () => {
     UserService.findUser().then(user => {
       expect(user).to.be.a('null');
     }).finally(done);
+  });
+});
+
+describe('Profile Settings Routes', () => {
+  before(done => {
+    chai.request(app)
+      .post('/api/v1/users/signin')
+      .send({
+        email: 'mathyr@gmail.com',
+        password: 'viola100L'
+      })
+      .end((err, res) => {
+        userToken = res.body.data.token;
+        done(err);
+      });
+  });
+  describe('/PATCH Profile Settings route', () => {
+    it('should return an error if parameter is not an email', done => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/profile/mathyrgmail.com')
+        .set('authorization', userToken)
+        .send({
+          firstName: 'Vio9la',
+          lastName: 'Vi8olin',
+          birthDate: '1980-06-25',
+          preferredLanguage: 'English',
+          department: 'Administration',
+          address: '22,juwon adedokun street',
+          lineManager: 'Pius',
+          gender: 'Male',
+          phoneNumber: '08123465471'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+    it('should return an error if wrong entries for birthDate field', done => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/profile/mathyr@gmail.com')
+        .set('authorization', userToken)
+        .send({
+          firstName: 'Viola',
+          lastName: 'Violin',
+          birthDate: 'hjhj',
+          preferredLanguage: 'English',
+          department: 'Administration',
+          address: '22,juwon adedokun street',
+          lineManager: 'Pius',
+          gender: 'Male',
+          phoneNumber: '08181384092'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+    it('should return an error if wrong entires for phoneNumber field', done => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/profile/mathyr@gmail.com')
+        .set('authorization', userToken)
+        .send({
+          firstName: 'Viola',
+          lastName: 'Violin',
+          birthDate: '1980-06-25',
+          preferredLanguage: 'English',
+          department: 'Administration',
+          address: '22,juwon adedokun street',
+          lineManager: 'Pius',
+          gender: 'Male',
+          phoneNumber: '08123asoa'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+    it('should return an error if wrong entires for gender field', done => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/profile/mathyr@gmail.com')
+        .set('authorization', userToken)
+        .send({
+          firstName: 'Viola',
+          lastName: 'Violin',
+          birthDate: '1980-06-25',
+          preferredLanguage: 'English',
+          department: 'Administration',
+          address: '22,juwon adedokun street',
+          lineManager: 'Pius',
+          gender: 'fcgh',
+          phoneNumber: '08181384092'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+    it('should return success if user is authenticated and all inputs are correct', done => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/profile/mathyr@gmail.com')
+        .set('authorization', userToken)
+        .send({
+          firstName: 'Viola',
+          lastName: 'Violin',
+          birthDate: '1980-06-25',
+          preferredLanguage: 'English',
+          department: 'Administration',
+          address: '22,juwon adedokun street',
+          lineManager: 'Pius',
+          gender: 'Male',
+          phoneNumber: '08181384092'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(201);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('success');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+    
+    it('should return error if authenticated user is not the owner of profile', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/profile/tosin@mail.com')
+        .set('authorization', userToken)
+        .send({
+          firstName: 'Viola',
+          lastName: 'Violin',
+          birthDate: '1980-06-25',
+          preferredLanguage: 'English',
+          department: 'Administration',
+          address: '22,juwon adedokun street',
+          lineManager: 'Pius',
+          gender: 'Male',
+          phoneNumber: '08181384092'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message')
+            .eql('You are not allowed to edit this profile');
+          done(err);
+        });
+    });
+    it('should return an error if user is not authenticated', done => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/profile/mathyr@gmail.com')
+        .send({
+          firstName: 'Viola',
+          lastName: 'Violin',
+          birthDate: '1980-06-25',
+          preferredLanguage: 'English',
+          department: 'Administration',
+          address: '22,juwon adedokun street',
+          lineManager: 'Pius',
+          gender: 'Male',
+          phoneNumber: '08123465471'
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+  });
+  describe('/GET Profile Settings Route', () => {
+    it('should return success if user is authenticated', done => {
+      chai
+        .request(app)
+        .get('/api/v1/users/profile/mathyr@gmail.com')
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('success');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+
+
+    it('should return error if user is not authenticated', done => {
+      chai
+        .request(app)
+        .get('/api/v1/users/profile/mathyr@gmail.com')
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message');
+          done(err);
+        });
+    });
+    it('should return error if not user is the owner of the profile', done => {
+      chai
+        .request(app)
+        .get('/api/v1/users/profile/tosin@mail.com')
+        .set('authorization', userToken)
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body).to.be.an('object');
+          expect(res.body).to.have.property('status').eql('error');
+          expect(res.body).to.have.property('message')
+          .eql('You are not allowed to see this profile');
+          done(err);
+        });
+    });
   });
 });

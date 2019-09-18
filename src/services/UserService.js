@@ -1,7 +1,6 @@
 import models from '../database/models';
 import Helper from '../utils/Helper';
 
-
 const { User } = models;
 
 /**
@@ -67,6 +66,20 @@ export default class UserService {
   }
 
   /**
+   * @method retrieveUser
+   * @description Medium between the database and UserController
+   * @static
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async retrieveUser(id, email) {
+    let user = await User.findOne({ returning: true, where: { id, email } });
+    return user;
+  }
+
+  /**
    * @method updateUser
    * @description Medium between the database and UserController
    * @static
@@ -79,5 +92,19 @@ export default class UserService {
       { isVerified: true },
       { where: { email } }
     );
+  }
+
+  /**
+   * @method updateUserProfile
+   * @param {object} userCredentials - data object
+   * @param {id}
+   * @param {email}
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async updateUserProfile(userCredentials, id, email) {
+    const data = userCredentials;
+    const user = await User.update(data, { returning: true, where: { id, email } });
+    return user[1];
   }
 }
