@@ -19,6 +19,15 @@ userRoute.post(
   UserController.signin
 );
 
+userRoute
+  .post('/users/reset', UserController.resetPassword)
+  .get('/users/reset/:token', UserController.updatePassword)
+  .patch(
+    '/users/reset/:token',
+    validation.validate('updatePassword'),
+    UserController.updatePassword
+  );
+
 userRoute.get(
   '/users/verifyEmail/:token',
   UserController.verifyUserEmail

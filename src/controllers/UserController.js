@@ -38,7 +38,6 @@ export default class UserController {
    */
   static signup(req, res) {
     const user = req.body;
-    const { host } = req.headers;
     const msg = 'Kindly confirm the link sent to your email account to complete your registration';
     UserService.signup(user).then(response => {
       const result = {
@@ -49,7 +48,7 @@ export default class UserController {
       };
       const { email } = result;
       const token = Helper.generateToken({ id: response.id, email, });
-      const mailData = UserController.composeVerificationMail(email, host, token);
+      const mailData = Helper.composeVerificationMail(req, email, token);
       sendEmail(transporter(), mailData);
       Responses.setSuccess(201, msg, { token, ...result });
       return Responses.send(res);
@@ -82,21 +81,79 @@ export default class UserController {
 
   /**
    * @method
-   * @description Email verification endpoint
+   * @description Implements password reset endpoint
    * @static
    * @param {object} req - Request object
    * @param {object} res - Response object
    * @returns {object} JSON response
    * @memberof UserController
   */
+  static async resetPassword(req, res) {
+    const { email } = req.body;
+    const emailOptions = Helper.constructResetEmail(req, email);
+    const validUser = await Helper.verifyExistingEmail(email);
+    if (validUser) {
+      sendEmail(transporter(), emailOptions);
+      Responses.setSuccess(200, 'a password reset link has been sent to your email');
+      return Responses.send(res);
+    }
+    Responses.setError(400, 'there is no user with such email');
+    return Responses.send(res);
+  }
+
+  /**
+   * @method
+   * @description Implements update password controller
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof UserController
+   */
+  static async updatePassword(req, res) {
+    const { token } = req.params;
+    const data = Helper.verifyToken(token);
+    const hasExpired = data.expiryDate < Date.now();
+    if (hasExpired) {
+      Responses.setError(400, 'this address link has expired');
+      return Responses.send(res);
+    }
+    if (req.method === 'GET') {
+      Responses.setSuccess(200, 'enter your new email');
+      return Responses.send(res);
+    }
+    const { password } = req.body;
+    const user = await UserService.resetPassword(password, data.email);
+    const {
+      id, email, createdAt, updatedAt
+    } = user[1];
+    Responses.setSuccess(
+      200,
+      'successfully updated your password',
+      {
+        id, email, createdAt, updatedAt
+      }
+    );
+    return Responses.send(res);
+  }
+
+  /**
+   * @method
+   * @description Email verification endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof UserController
+   */
   static async verifyUserEmail(req, res) {
     const { token } = req.params;
     const { id, email } = Helper.verifyToken(token);
     const user = await UserService.findUser(id);
     if (email === user.email) {
       UserService.updateUser(email);
-      Responses.setSuccess(200, 'Your account has been verified');
     }
+    Responses.setSuccess(200, 'Your account has been verified');
     return Responses.send(res);
   }
 }

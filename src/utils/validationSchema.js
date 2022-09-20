@@ -48,5 +48,8 @@ export default {
       + ' and must follow this format: YYYY-MM-DD'),
     reason: str.label('reason must be a string'),
     accommodation: str.label('accommodation must be a string')
-  })
+  }),
+  updatePassword: Joi.object().keys({
+    password
+  }),
 };

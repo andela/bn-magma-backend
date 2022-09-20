@@ -54,6 +54,24 @@ export default class UserService {
   }
 
   /**
+   * @method resetPassword
+   * @description Signs in user with valid credentials
+   * @static
+   * @param {string} password
+   * @param {string} email
+   * @returns {object} JSON response
+   * @memberof UserService
+   */
+  static async resetPassword(password, email) {
+    const newPassword = await Helper.hashPassword(password);
+    return User.update({ password: newPassword }, {
+      where: { email },
+      returning: true,
+      plain: true,
+    });
+  }
+
+  /**
    * @method findUser
    * @description Medium between the database and UserController
    * @static
