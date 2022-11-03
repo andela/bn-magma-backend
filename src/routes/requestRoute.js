@@ -5,8 +5,8 @@ import requestValidations from '../middlewares/requestValidations';
 import Auth from '../middlewares/Auth';
 
 const { userAuth } = Auth;
-const { validateTrip, validateTripRequest } = requestValidations;
-const { bookTrip } = RequestController;
+const { validateTrip, validateTripRequest, validateOpenTrip } = requestValidations;
+const { bookTrip, editTrip } = RequestController;
 
 const requestRoute = express.Router();
 
@@ -17,6 +17,15 @@ requestRoute.post(
   validateTrip,
   validateTripRequest,
   bookTrip
+);
+
+requestRoute.patch(
+  '/requests/:id',
+  userAuth,
+  validation.validate('request'),
+  validateTrip,
+  validateOpenTrip,
+  editTrip
 );
 
 export default requestRoute;

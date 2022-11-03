@@ -161,7 +161,47 @@
           }
         }
       }
+    },
+  "/requests/:id": {
+    "patch": {
+      "tags": ["request"],
+      "summary": "Edit a travel request",
+      "description": "This endpoint edits a one-way trip request",
+      "operationId": "editTrip",
+      "consumes": ["application/json"],
+      "produces": ["application/json"],
+      "security": [
+        {
+          "Bearer": []
+        }
+      ],
+      "parameters": [
+        {
+          "in": "body",
+          "name": "body",
+          "description": "data needed to edit a trip if open",
+          "required": true,
+          "schema": {
+            "$ref": "#/definitions/BookTrip"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Request updated successfully",
+          "schema": {
+            "$ref": "#/definitions/RequestResponse"
+          }
+        },
+        "400": {
+          "description": "departureDate is required"
+        },
+        "409": {
+          "description": "you already have a trip booked around this period, you may choose to cancel and make a multi-city request"
+        }
+      }
     }
+  }
   },
   "definitions": {
     "Signup": {

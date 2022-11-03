@@ -34,4 +34,26 @@ export default class RequestController {
       return Responses.send(res);
     });
   }
+
+  /**
+   * @method
+   * @description Implements edit travel request endpoint
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @returns {object} JSON response
+   * @memberof RequestController
+   */
+  static editTrip(req, res) {
+    const requestId = req.params.id;
+    const requestDetails = req.body;
+    Helper.formatRequest(requestDetails);
+    RequestService.editTrip(requestDetails, requestId).then(response => {
+      Responses.setSuccess(200, 'travel request updated successfully', response);
+      return Responses.send(res);
+    }).catch(() => {
+      Responses.setError(500, 'database error');
+      return Responses.send(res);
+    });
+  }
 }

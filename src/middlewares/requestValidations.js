@@ -63,4 +63,37 @@ const validateTrip = (req, res, next) => {
   next();
 };
 
-export default { validateTripRequest, validateTrip };
+/**
+   * @function
+   * @description Validates open trip
+   * @static
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {object} next
+   * @returns {object} JSON response
+   */
+const validateOpenTrip = (req, res, next) => {
+  const { id } = req.user;
+  const requestId = req.params.id;
+  if (!requestId) {
+    Responses.setError(400, 'Error! Request id is empty!');
+    return Responses.send(res);
+  }
+  models.Request.findOne({ where: { id: requestId } }).then(data => {
+    if (!data) {
+      Responses.setError(400, 'Request does not exist');
+      return Responses.send(res);
+    }
+    if (id !== data.userId) {
+      Responses.setError(400, 'You are not permitted to edit this request. Wrong user!');
+      return Responses.send(res);
+    }
+    if (data.status !== 'open') {
+      Responses.setError(405, 'Your trip cannot be edited. It is closed already!');
+      return Responses.send(res);
+    }
+    next();
+  });
+};
+
+export default { validateTripRequest, validateTrip, validateOpenTrip };

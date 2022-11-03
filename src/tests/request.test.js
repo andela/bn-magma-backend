@@ -188,3 +188,73 @@ describe('/POST Requests route', () => {
       });
   });
 });
+
+describe('/PATCH Requests route', () => {
+  it('should return error if request does not exist', done => {
+    chai
+      .request(app)
+      .patch('/api/v1/requests/100')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: 'Ogun',
+        destination: 'London',
+        type: 'return',
+        departureDate: '2020-10-12',
+        returnDate: '2021-10-12',
+        reason: 'Moving to a new office location',
+        accommodation: 'Buckingham Palace'
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('message')
+          .eql('Request does not exist');
+        done(err);
+      });
+  });
+
+  it('should return error if details are invalid', done => {
+    chai
+      .request(app)
+      .patch('/api/v1/requests/1')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: '',
+        destination: 'London',
+        type: 'return',
+        departureDate: '2020-10-12',
+        returnDate: '2021-10-12',
+        reason: 'Moving to a new office location',
+        accommodation: 'Buckingham Palace'
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('status').eql('error');
+        expect(res.body).to.have.property('message');
+        done(err);
+      });
+  });
+
+  it('should edit & update if details are valid', done => {
+    chai
+      .request(app)
+      .patch('/api/v1/requests/1')
+      .set('authorization', `Bearer ${userToken}`)
+      .send({
+        origin: 'Ogun  ',
+        destination: '  London  ',
+        type: 'one-way',
+        departureDate: '2019-10-11',
+        reason: '   dgfgfg      hfhfhf       kfkfkf   ',
+        accommodation: '   bbbv   '
+      })
+      .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.property('message')
+          .eql('travel request updated successfully');
+        done(err);
+      });
+  });
+});
